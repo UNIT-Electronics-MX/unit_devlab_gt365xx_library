@@ -8,6 +8,9 @@
  * darkness and fall in light. readInvertRaw()/readInvertPercentage() flip
  * that scale (inverted = 4095 - raw) so the reported value rises with more
  * light instead, matching the usual "more light = higher number" intuition.
+ *
+ * @author Jonathan Mejorado
+ * @organization UNIT Electronics MX
  */
 
 #include <Arduino.h>
@@ -22,6 +25,11 @@
   #define I2C_BUS Wire
   constexpr int SDA_PIN = 6;
   constexpr int SCL_PIN = 7;
+#elif defined(ARDUINO_ARCH_STM32)
+  // STM32duino: default I2C pins of the selected board.
+  #define I2C_BUS Wire
+  constexpr int SDA_PIN = SDA;
+  constexpr int SCL_PIN = SCL;
 #elif defined(ARDUINO_ARCH_AVR)
   // AVR has fixed I2C pins (Uno/Nano: A4/A5, Mega: 20/21, Leonardo: 2/3);
   // SDA/SCL come from the board variant and begin() ignores the pin numbers.
@@ -29,7 +37,7 @@
   constexpr int SDA_PIN = SDA;
   constexpr int SCL_PIN = SCL;
 #else
-#error "Use an ESP32, RP2040, RP2350, or AVR master"
+#error "Use an ESP32, RP2040, RP2350, STM32, or AVR master"
 #endif
 
 constexpr uint32_t I2C_FREQ = 400000UL;
@@ -66,8 +74,8 @@ void loop() {
   uint16_t inverted = 0U;
   if (sensor.readInvertRaw(inverted)) {
     float percent = (inverted * 100.0f) / 4095.0f;
-#if defined(ARDUINO_ARCH_AVR)
-    // AVR Serial has no printf(), and avr-libc printf lacks %f.
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_STM32)
+    // AVR Serial has no printf(), and newlib-nano/avr-libc printf lack %f.
     Serial.print("adc0_inverted=");
     Serial.print(inverted);
     Serial.print(" percent=");

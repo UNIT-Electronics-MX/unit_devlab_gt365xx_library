@@ -4,6 +4,10 @@
  *        reassign a GT36537 device I2C address (factory address 0x26).
  *
  * Open Serial at 115200 baud and enter, for example: scan / change 26 30
+ * Compatible with ESP32, RP2040/RP2350, STM32 and AVR.
+ *
+ * @author Cesar Bautista, Jonathan Mejorado
+ * @organization UNIT Electronics MX
  */
 
 #include <Arduino.h>
@@ -19,8 +23,18 @@ constexpr int SCL_PIN = 13;
 TwoWire &i2cBus = Wire;
 constexpr int SDA_PIN = 6;
 constexpr int SCL_PIN = 7;
+#elif defined(ARDUINO_ARCH_STM32)
+// STM32duino: default I2C pins of the selected board.
+TwoWire &i2cBus = Wire;
+constexpr int SDA_PIN = SDA;
+constexpr int SCL_PIN = SCL;
+#elif defined(ARDUINO_ARCH_AVR)
+// AVR has fixed I2C pins; begin() ignores the pin numbers.
+TwoWire &i2cBus = Wire;
+constexpr int SDA_PIN = SDA;
+constexpr int SCL_PIN = SCL;
 #else
-#error "Use an ESP32, RP2040, or RP2350 master"
+#error "Use an ESP32, RP2040, RP2350, STM32, or AVR master"
 #endif
 
 constexpr uint8_t FACTORY_ADDRESS = 0x26U;

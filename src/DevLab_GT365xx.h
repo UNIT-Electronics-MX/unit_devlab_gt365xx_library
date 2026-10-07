@@ -1,3 +1,11 @@
+/**
+ * @file DevLab_GT365xx.h
+ * @brief DevLab GT365xx light sensor (LDR) driver over DDP/I2C.
+ *
+ * @author Jonathan Mejorado
+ * @organization UNIT Electronics MX
+ */
+
 #ifndef DEVLAB_GT365xx_H
 #define DEVLAB_GT365xx_H
 
